@@ -28,26 +28,18 @@ public class UserDaoImp implements UserDao {
    @Override
    @SuppressWarnings("unchecked")
    public List<User> listUsers() {
-      TypedQuery<User> query=sessionFactory.getCurrentSession().createQuery("from User");
+      TypedQuery<User> query=sessionFactory.getCurrentSession().createQuery("FROM User u JOIN FETCH u.car", User.class);
       return query.getResultList();
    }
 
    @Override
-   public void getOwnerCar(String model, int series) {
-      String hql = "FROM User user WHERE user.car.model = :model AND user.car.series = :series";
+   public List<User> getOwnerCar(String model, int series) {
+      String hql = "FROM User user JOIN FETCH user.car WHERE user.car.model = :model AND user.car.series = :series";
       List<User> userList = sessionFactory.getCurrentSession()
               .createQuery(hql, User.class)
               .setParameter("model", model)
               .setParameter("series", series)
               .getResultList();
-      for (User user: userList) {
-         System.out.println("Id : " + user.getId());
-         System.out.println("First Name : " + user.getFirstName());
-         System.out.println("Last Name : " + user.getLastName());
-         System.out.println("Email : " + user.getEmail());
-         System.out.println("Car Model : " + user.getCarModel());
-         System.out.println("Car Series : " + user.getCarSeries());
-         System.out.println();
-      }
+      return userList;
    }
 }
